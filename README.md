@@ -1,5 +1,5 @@
 
-# DiggerTast.cs 
+# DiggerTask.cs 
 Активность «Бомба», Активность «Особенный монстр»
 
 # Game.cs
