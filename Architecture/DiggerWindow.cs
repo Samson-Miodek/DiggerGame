@@ -72,8 +72,9 @@ namespace Digger
             var headPos = GetPlayerPosition();
             var offsetX = -headPos.X + GameState.ElementSize*50/2;
             var offsetY = -headPos.Y + GameState.ElementSize*20/2;
-            e.Graphics.TranslateTransform(offsetX, offsetY);
-            //e.Graphics.TranslateTransform(0, GameState.ElementSize);
+            //чтобы центрировать на игроке
+           // e.Graphics.TranslateTransform(offsetX, offsetY); раскомментить
+            e.Graphics.TranslateTransform(0, GameState.ElementSize);//закомментить
 
             e.Graphics.FillRectangle(
                 Brushes.Black, 0, 0, GameState.ElementSize * Game.MapWidth,
