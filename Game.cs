@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Windows.Forms;
 
@@ -44,33 +44,9 @@ S TTST  TG
         {
             /*
              * Активность «Генератор карт»
-                Без пояснений.
+             *  Без пояснений.
              */
-            var random = new Random();
-
-            var map = new StringBuilder("P");
-            var arr = new [] { "T"," "};
-            var w = 50;
-            var h = 20;
-
-            for (var y = 0; y < h; y++)
-            {
-                for (var x = 0; x < w-(y == 0 ? 1 : 0); x++)
-                {
-                    if (random.Next(100) < 3 && y > w*0.1 && x > h*0.1)
-                        map.Append("Y");
-                    else if (random.Next(100) < 3 && y > w*0.1 && x > h*0.1)
-                        map.Append("M");
-                    else if (random.Next(100) < 5)
-                        map.Append("S");
-                    else if (random.Next(100) < 5)
-                        map.Append("G");
-                    else
-                        map.Append(arr[random.Next(arr.Length)]);
-                }
-                map.Append(Environment.NewLine);
-            }
-            Map = CreatureMapCreator.CreateMap(map.ToString());
+            Map = CreatureMapCreator.CreateRandomMap(50,30);
         }
     }
 }
