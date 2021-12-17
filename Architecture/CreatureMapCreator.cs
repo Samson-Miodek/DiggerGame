@@ -1,14 +1,45 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Digger
 {
     public static class CreatureMapCreator
     {
         private static readonly Dictionary<string, Func<ICreature>> factory = new Dictionary<string, Func<ICreature>>();
+        /*
+         * Активность «Генератор карт»
+            Без пояснений.
+         */
+        public static ICreature[,] CreateRandomMap(int w, int h)
+        {
+            var random = new Random();
 
+            var map = new StringBuilder("P");
+            var cells = new [] { "T"," "};
+
+            for (var y = 0; y < h; y++)
+            {
+                for (var x = 0; x < w-(y == 0 ? 1 : 0); x++)
+                {
+                    if (random.Next(100) < 3 && y > w*0.1 && x > h*0.1)
+                        map.Append("Y");
+                    else if (random.Next(100) < 3 && y > w*0.1 && x > h*0.1)
+                        map.Append("M");
+                    else if (random.Next(100) < 5)
+                        map.Append("S");
+                    else if (random.Next(100) < 5)
+                        map.Append("G");
+                    else
+                        map.Append(cells[random.Next(cells.Length)]);
+                }
+                map.Append(Environment.NewLine);
+            }
+
+            return CreateMap(map.ToString());
+        }
         public static ICreature[,] CreateMap(string map, string separator = "\r\n")
         {
             var rows = map.Split(new[] {separator}, StringSplitOptions.RemoveEmptyEntries);
