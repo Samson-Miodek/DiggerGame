@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -92,7 +92,6 @@ namespace Digger
                     return new CreatureCommand();
                 }
                 
-
                 dx = command.DeltaX;
                 photoId = (photoId + 1) % 8;
                 return command;
@@ -122,13 +121,22 @@ namespace Digger
  */
     public class Bomb : Monster
     {
+        private int x;
+        private int y;
         public override CreatureCommand Act(int x, int y)
         {
+            this.x = x;
+            this.y = y;
             return new CreatureCommand();
         }
         public override string GetImageFileName()
         {
             return "Bomb.png";
+        }
+        
+        public override bool DeadInConflict(ICreature conflictedObject)
+        {
+            return true;
         }
     }
     /*
@@ -167,7 +175,7 @@ namespace Digger
             if (CanMoveToX(posX) && CanMoveToY(posY))
             {
                 var cell = Game.Map[posX, posY];
-                if(cell is null || cell is Player || cell is Gold)
+                if(cell is null || cell is Player || cell is Gold || cell is Bomb)
                     return move;
             }
             
@@ -224,13 +232,13 @@ namespace Digger
             
             var cellMap = Game.Map[x + dx, y + dy];
             
-            if (cellMap is null || cellMap is Player || cellMap is Gold)
+            if (cellMap is null || cellMap is Player || cellMap is Gold || cellMap is Bomb)
                 return new CreatureCommand() { DeltaX = dx, DeltaY = dy };
 
             return new CreatureCommand();
         }
 
-        public bool DeadInConflict(ICreature conflictedObject)
+        public virtual bool DeadInConflict(ICreature conflictedObject)
         {
             return conflictedObject is Sack || conflictedObject is Monster;
         }
