@@ -70,10 +70,10 @@ namespace Digger
         protected override void OnPaint(PaintEventArgs e)
         {
             var headPos = GetPlayerPosition();
-            var offsetX = -headPos.X + GameState.ElementSize*50/2;
-            var offsetY = -headPos.Y + GameState.ElementSize*20/2;
+            var offsetX = -headPos.X + GameState.ElementSize*Game.MapWidth/2;
+            var offsetY = -headPos.Y + GameState.ElementSize*Game.MapHeight/2;
             //чтобы центрировать на игроке
-           // e.Graphics.TranslateTransform(offsetX, offsetY); раскомментить
+           // e.Graphics.TranslateTransform(offsetX, offsetY); //раскомментить
             e.Graphics.TranslateTransform(0, GameState.ElementSize);//закомментить
 
             e.Graphics.FillRectangle(
