@@ -68,15 +68,23 @@ namespace Digger
     
         protected override void OnPaint(PaintEventArgs e)
         {
+            
             var headPos = GetPlayerPosition();
-            var offsetX = -headPos.X + GameState.ElementSize*Game.MapWidth/2;
-            var offsetY = -headPos.Y + GameState.ElementSize*Game.MapHeight/2;
-            e.Graphics.TranslateTransform(offsetX, offsetY); //закомментить    
-           // e.Graphics.TranslateTransform(0, GameState.ElementSize);//разкомментить
-
+            var offsetX = -headPos.X + Size.Width/2;
+            var offsetY = -headPos.Y + Size.Height/2;
+            //рамка
             e.Graphics.FillRectangle(
-                Brushes.Black, -offsetX, -offsetY, GameState.ElementSize * Game.MapWidth+GameState.ElementSize,
+                Brushes.Black, 0, 0, GameState.ElementSize * Game.MapWidth+GameState.ElementSize,
                 GameState.ElementSize * Game.MapHeight+GameState.ElementSize);
+            
+            if(headPos.X < Size.Width/2 && headPos.Y < Size.Height/2)
+                e.Graphics.TranslateTransform(0, 0);
+            else if(headPos.X < Size.Width/2)
+                e.Graphics.TranslateTransform(0, offsetY);
+            else if(headPos.Y < Size.Height/2)
+                e.Graphics.TranslateTransform(offsetX, 0);
+            else 
+                e.Graphics.TranslateTransform(offsetX, offsetY);
 
             foreach (var obj in gameState.Animations)
             {
