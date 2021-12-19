@@ -77,8 +77,7 @@ namespace Digger
             e.Graphics.FillRectangle(
                 Brushes.Black, -offsetX, -offsetY, GameState.ElementSize * Game.MapWidth+GameState.ElementSize,
                 GameState.ElementSize * Game.MapHeight+GameState.ElementSize);
-            e.Graphics.DrawRectangle(Pens.Gray,0, 0, GameState.ElementSize * Game.MapWidth,
-                GameState.ElementSize * Game.MapHeight);
+
             foreach (var obj in gameState.Animations)
             {
                  if(obj.Creature is Player)
@@ -100,6 +99,8 @@ namespace Digger
                     e.Graphics.DrawImage(bitmaps[obj.Creature.GetImageFileName()], obj.Location);
                 }
             }
+            e.Graphics.DrawRectangle(Pens.Gray,0, 0, GameState.ElementSize * Game.MapWidth,
+                GameState.ElementSize * Game.MapHeight);
             e.Graphics.ResetTransform();
             e.Graphics.DrawString(Game.Scores.ToString(), new Font("Arial", 16), Brushes.Green, 0, 0);
         }
