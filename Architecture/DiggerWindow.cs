@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
 using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
@@ -66,24 +65,23 @@ namespace Digger
 
             return new Point();
         }
-
+    
         protected override void OnPaint(PaintEventArgs e)
         {
             var headPos = GetPlayerPosition();
             var offsetX = -headPos.X + GameState.ElementSize*Game.MapWidth/2;
             var offsetY = -headPos.Y + GameState.ElementSize*Game.MapHeight/2;
-            //чтобы центрировать на игроке
-           // e.Graphics.TranslateTransform(offsetX, offsetY); //раскомментить
-            e.Graphics.TranslateTransform(0, GameState.ElementSize);//закомментить
+            e.Graphics.TranslateTransform(offsetX, offsetY); //закомментить    
+           // e.Graphics.TranslateTransform(0, GameState.ElementSize);//разкомментить
 
             e.Graphics.FillRectangle(
-                Brushes.Black, 0, 0, GameState.ElementSize * Game.MapWidth,
+                Brushes.Black, -offsetX, -offsetY, GameState.ElementSize * Game.MapWidth+GameState.ElementSize,
+                GameState.ElementSize * Game.MapHeight+GameState.ElementSize);
+            e.Graphics.DrawRectangle(Pens.Gray,0, 0, GameState.ElementSize * Game.MapWidth,
                 GameState.ElementSize * Game.MapHeight);
             foreach (var obj in gameState.Animations)
             {
-               //e.Graphics.DrawImage(bitmaps[obj.Creature.GetImageFileName()], obj.Location);
-               //continue;
-             if(obj.Creature is Player)
+                 if(obj.Creature is Player)
                 {
                     var photo = (Bitmap)bitmaps[obj.Creature.GetImageFileName()].Clone();
                     if(Player.dx < 0)  
