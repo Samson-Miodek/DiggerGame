@@ -87,7 +87,14 @@ namespace Digger
                     if(Player.dx < 0)  
                         photo.RotateFlip(RotateFlipType.Rotate180FlipY);
                     e.Graphics.DrawImage(photo, obj.Location);
-                }
+                }else if (obj.Creature is SpecialMonster)
+                 {
+                     var photo = (Bitmap)bitmaps[obj.Creature.GetImageFileName()].Clone();
+                     var monster = obj.Creature as SpecialMonster;
+                     if(monster.dx > 0)  
+                         photo.RotateFlip(RotateFlipType.Rotate180FlipY);
+                     e.Graphics.DrawImage(photo, obj.Location);
+                 }
                 else
                 {
                     e.Graphics.DrawImage(bitmaps[obj.Creature.GetImageFileName()], obj.Location);
