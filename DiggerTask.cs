@@ -1,23 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Digger
 {
-    enum DrawingPriority
+    public static class DefaultValue
     {
-        Third,
-        Second,
-        First
+        public static CreatureCommand defaultCommand = new CreatureCommand { DeltaX = 0, DeltaY = 0 };
+        public static CreatureCommand defaultCommand2 = new CreatureCommand { DeltaX = 0, DeltaY = 0, TransformTo = new Gold()};
     }
     
     public class Terrain : ICreature
     {
         private static string fileName = "Terrain.png";
-
         public CreatureCommand Act(int x, int y)
         {
-            return new CreatureCommand { DeltaX = 0, DeltaY = 0 };
+            return DefaultValue.defaultCommand;
         }
 
         public bool DeadInConflict(ICreature conflictedObject)
@@ -27,7 +26,7 @@ namespace Digger
 
         public int GetDrawingPriority()
         {
-            return (int) DrawingPriority.Second;
+            return 2;
         }
 
         public string GetImageFileName()
@@ -40,7 +39,21 @@ namespace Digger
     {
         // private static string fileName = "Digger.png";
         public static int dx = 0;
+        public static Point position = new Point();
         private static int photoId = 0;
+
+        private string[] photos = new[]
+        {
+            string.Format("{0}.png",0),
+            string.Format("{0}.png",1),
+            string.Format("{0}.png",2),
+            string.Format("{0}.png",3),
+            string.Format("{0}.png",4),
+            string.Format("{0}.png",5),
+            string.Format("{0}.png",6),
+            string.Format("{0}.png",7)
+        };
+            
 
         private static Dictionary<Keys, CreatureCommand> commands = new Dictionary<Keys, CreatureCommand>
         {
@@ -89,30 +102,39 @@ namespace Digger
                 if (!CanMoveTo(x, y) || Game.Map[x, y] is Sack)
                 {
                     dx = 0;
-                    return new CreatureCommand();
+                    return DefaultValue.defaultCommand;
                 }
+
+                position.X=x;
+                position.Y=y;
                 
                 dx = command.DeltaX;
-                photoId = (photoId + 1) % 8;
+                photoId = (photoId + 1) % photos.Length;
                 return command;
             }
             dx = 0;
-            return new CreatureCommand();
+            return DefaultValue.defaultCommand;
         }
 
         public bool DeadInConflict(ICreature conflictedObject)
         {
-            return conflictedObject is Sack || conflictedObject is Monster;
+            if (conflictedObject is Sack || conflictedObject is Monster)
+            {
+                Game.Map = CreatureMapCreator.CreateRandomMap(Game.MapWidth,Game.MapHeight);
+                Game.Scores = 0;
+                return true;
+            }
+            return false;
         }
 
         public int GetDrawingPriority()
         {
-            return (int) DrawingPriority.Third;
+            return 0;
         }
 
         public string GetImageFileName()
         {
-            return string.Format("{0}.png",photoId);
+            return photos[photoId];
         }
     }
 /*
@@ -123,15 +145,16 @@ namespace Digger
     {
         private int x;
         private int y;
+        private static string fileName = "Bomb.png";
         public override CreatureCommand Act(int x, int y)
         {
             this.x = x;
             this.y = y;
-            return new CreatureCommand();
+            return DefaultValue.defaultCommand;
         }
         public override string GetImageFileName()
         {
-            return "Bomb.png";
+            return fileName;
         }
         
         public override bool DeadInConflict(ICreature conflictedObject)
@@ -149,6 +172,10 @@ namespace Digger
     public class SpecialMonster : Monster
     {
         private int commandId = 0;
+        public  int dx = 0;
+        private Random random = new Random();
+        private static string fileName = "SpecMonster.png";
+        
         private static Dictionary<int, CreatureCommand> commands = new Dictionary<int, CreatureCommand>
         {
             {0,  new CreatureCommand { DeltaX = 0, DeltaY = 1}},
@@ -174,23 +201,24 @@ namespace Digger
 
             if (CanMoveToX(posX) && CanMoveToY(posY))
             {
+                dx = move.DeltaX;
                 var cell = Game.Map[posX, posY];
                 if(cell is null || cell is Player || cell is Gold || cell is Bomb)
                     return move;
             }
             
-            var newCommandId = commandId = new Random().Next(commands.Count);
+            var newCommandId = commandId = this.random.Next(commands.Count);
 
             if (newCommandId == commandId)
             {
                 commandId = (commandId + 1) % commands.Count;
             }
-            
-            return new CreatureCommand();
+
+            return DefaultValue.defaultCommand;
         }
         public override string GetImageFileName()
         {
-            return "SpecMonster.png";
+            return fileName;
         }
     }
     
@@ -199,7 +227,7 @@ namespace Digger
         private static string fileName = "Monster.png";
         private static int playerPosX;
         private static int playerPosY;
-        
+       
         private static bool PlayerIsDead()
         {
             for (var x = 0; x < Game.MapWidth; x++)
@@ -209,14 +237,14 @@ namespace Digger
                         playerPosX = x;
                         playerPosY = y;
                         return false;
-                    }
+                    }   
             return true;
         }
         
         public virtual CreatureCommand Act(int x, int y)
         {
             if(PlayerIsDead())
-                return new CreatureCommand();
+                return DefaultValue.defaultCommand;
             
             var dx = 0;
             var dy = 0;
@@ -235,7 +263,7 @@ namespace Digger
             if (cellMap is null || cellMap is Player || cellMap is Gold || cellMap is Bomb)
                 return new CreatureCommand() { DeltaX = dx, DeltaY = dy };
 
-            return new CreatureCommand();
+            return DefaultValue.defaultCommand;
         }
 
         public virtual bool DeadInConflict(ICreature conflictedObject)
@@ -245,7 +273,7 @@ namespace Digger
 
         public int GetDrawingPriority()
         {
-            return (int) DrawingPriority.First;
+            return 2;
         }
         
         public virtual string GetImageFileName()
@@ -261,7 +289,7 @@ namespace Digger
         private string fallingName2 = "FallingSack2.png";
         private string fallingName3 = "FallingSack3.png";
         private int fallCellsCount = 0;
-		
+        
         private ICreature GetNextCellMapOrThis(int x, int y)
         {
             if(y+1 < Game.MapHeight)
@@ -292,11 +320,11 @@ namespace Digger
             {
                 fallCellsCount = 0;
                 fileName = "BoomSack.png";
-                return new CreatureCommand { DeltaX = 0, DeltaY = 0, TransformTo = new Gold()};
+                return DefaultValue.defaultCommand2;
             }
             fileName = "Sack.png";
             fallCellsCount = 0;
-            return new CreatureCommand { DeltaX = 0, DeltaY = 0};
+            return DefaultValue.defaultCommand;
         }
         
         public bool DeadInConflict(ICreature conflictedObject)
@@ -306,7 +334,7 @@ namespace Digger
 
         public int GetDrawingPriority()
         {
-            return (int) DrawingPriority.Second;
+            return 1;
         }   
         
         public string GetImageFileName()
@@ -318,10 +346,10 @@ namespace Digger
     {
         private static string fileName = "Gold.png";
         private const int Coins = 10;
-        
+
         public CreatureCommand Act(int x, int y)
         {
-            return new CreatureCommand();
+            return DefaultValue.defaultCommand;
         }
         
         public bool DeadInConflict(ICreature conflictedObject)
@@ -333,7 +361,7 @@ namespace Digger
         
         public int GetDrawingPriority()
         {
-            return (int) DrawingPriority.First;
+            return 2;
         }
         
         public string GetImageFileName()
